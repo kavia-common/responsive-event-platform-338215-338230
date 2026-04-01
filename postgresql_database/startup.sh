@@ -142,6 +142,18 @@ export POSTGRES_DB="${DB_NAME}"
 export POSTGRES_PORT="${DB_PORT}"
 EOF
 
+# Run migrations + seed (single canonical flow: migrate.sh).
+# This is intentionally done after db_connection.txt is written, because migrate.sh
+# reads the connection string from that file.
+if [ -f "./migrate.sh" ]; then
+    echo ""
+    echo "Running database migrations/seed..."
+    chmod +x ./migrate.sh 2>/dev/null || true
+    ./migrate.sh
+else
+    echo "WARNING: migrate.sh not found; skipping migrations."
+fi
+
 echo "PostgreSQL setup complete!"
 echo "Database: ${DB_NAME}"
 echo "User: ${DB_USER}"
